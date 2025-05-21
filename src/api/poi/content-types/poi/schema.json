@@ -1,0 +1,28 @@
+{
+  "kind": "collectionType",
+  "collectionName": "pois",
+  "info": {
+    "singularName": "poi",
+    "pluralName": "pois",
+    "displayName": "POI"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    }
+  }
+}
