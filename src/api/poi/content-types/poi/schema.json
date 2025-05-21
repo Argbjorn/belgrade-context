@@ -4,7 +4,8 @@
   "info": {
     "singularName": "poi",
     "pluralName": "pois",
-    "displayName": "POI"
+    "displayName": "POI",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -23,6 +24,14 @@
           "localized": true
         }
       }
+    },
+    "lat": {
+      "type": "decimal",
+      "required": true
+    },
+    "lon": {
+      "type": "decimal",
+      "required": true
     }
   }
 }
