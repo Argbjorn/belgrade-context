@@ -1,0 +1,16 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Each user reads and writes only their own document: users/{uid} = { visited: [...], favorites: [...] }
+    match /users/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      // Only the two lists of point ids, with a sane size cap; deleting the document is not used by the app
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['visited', 'favorites'])
+        && request.resource.data.get('visited', []) is list
+        && request.resource.data.get('favorites', []) is list
+        && request.resource.data.get('visited', []).size() <= 1000
+        && request.resource.data.get('favorites', []).size() <= 1000;
+    }
+  }
+}

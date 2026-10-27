@@ -1,0 +1,210 @@
+:root {
+  --accent: #e5484d;
+  --visited: #2f9e44;
+  --favorite: #f5b301;
+  --text: #1c1c1e;
+  --muted: #6b6b70;
+  --bg: #fff;
+  --border: #e5e5ea;
+}
+
+html, body {
+  margin: 0;
+  height: 100%;
+  font: 15px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--text);
+}
+
+#map {
+  position: fixed;
+  inset: 0;
+}
+
+/* Card content (shared by popup and sheet) */
+.card h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  line-height: 1.3;
+}
+
+.card .links {
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.card .links a {
+  display: inline-block;
+  padding: 3px 0;
+  color: #1a73e8;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.card .actions {
+  display: flex;
+  gap: 8px;
+}
+
+.card .actions button {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.card .actions button[data-act="visited"] {
+  flex: none;
+  width: 190px;
+}
+
+.card .actions button[data-act="visited"][aria-pressed="true"] {
+  background: var(--visited);
+  border-color: var(--visited);
+  color: #fff;
+}
+
+.card .actions button[data-act="favorite"] {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  padding: 0;
+  border-color: transparent;
+}
+
+.card .actions button[data-act="favorite"] svg {
+  width: 26px;
+  height: 26px;
+  fill: none;
+  stroke: #a1a1a6;
+  transition: transform .15s;
+}
+
+.card .actions button[data-act="favorite"]:hover svg {
+  stroke: var(--favorite);
+}
+
+.card .actions button[data-act="favorite"]:active svg {
+  transform: scale(.85);
+}
+
+.card .actions button[data-act="favorite"][aria-pressed="true"] svg {
+  fill: var(--favorite);
+  stroke: var(--favorite);
+}
+
+/* Desktop popup */
+.maplibregl-popup-content {
+  padding: 14px 16px;
+  border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, .18);
+}
+
+.maplibregl-popup-close-button {
+  font-size: 20px;
+  padding: 0 6px;
+}
+
+/* Mobile bottom sheet */
+.sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  max-height: 50vh;
+  overflow-y: auto;
+  padding: 18px 16px calc(16px + env(safe-area-inset-bottom));
+  background: var(--bg);
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -6px 24px rgba(0, 0, 0, .18);
+  box-sizing: border-box;
+}
+
+.sheet[hidden] {
+  display: none;
+}
+
+.sheet .card h3 {
+  padding-right: 32px;
+}
+
+.sheet-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  background: none;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+/* Filter control */
+.filter-ctrl {
+  padding: 6px 10px;
+  font: 13px/1.3 system-ui, sans-serif;
+  color: var(--text);
+}
+
+.filter-ctrl label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.filter-ctrl input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--visited);
+  cursor: pointer;
+}
+
+.account-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 4px 4px 10px;
+  font: 13px/1.3 system-ui, sans-serif;
+  color: var(--text);
+}
+
+.account-ctrl button {
+  width: auto;
+  height: auto;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font: 600 13px/1.3 system-ui, sans-serif;
+  color: #1a73e8;
+}
+
+.account-name {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-name[hidden] {
+  display: none;
+}
+
+.filter-count {
+  padding-top: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
