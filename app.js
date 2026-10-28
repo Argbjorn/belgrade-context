@@ -10,6 +10,7 @@ const KEYS = {
   hideVisited: 'bvm:hideVisited',
   // uid of the account whose marks are cached in localStorage; null = marks made without signing in
   uid: 'bvm:uid',
+  aboutSeen: 'bvm:aboutSeen',
 };
 
 // localStorage can throw (private mode, blocked storage) — the map must work anyway
@@ -57,6 +58,11 @@ map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-
 // Android Chrome drops the WebGL context of a backgrounded tab. MapLibre 4 recreates the painter on restore,
 // but tiles and style atlases keep GPU objects from the dead context and the map renders blank.
 // Rebuilding the style from its own snapshot recreates all of them; our points and layers are part of the snapshot.
+// On narrow screens MapLibre shows attribution compact but expanded, covering the "О проекте" button; start it collapsed
+map.once('load', () => {
+  map.getContainer().querySelector('.maplibregl-ctrl-attrib')?.classList.remove('maplibregl-compact-show');
+});
+
 map.on('webglcontextrestored', () => {
   if (!map.isStyleLoaded()) return;
   map.setStyle(map.getStyle(), { diff: false });
@@ -296,6 +302,63 @@ map.on('click', e => {
 
 map.on('mouseenter', 'points-hit', () => { map.getCanvas().style.cursor = 'pointer'; });
 map.on('mouseleave', 'points-hit', () => { map.getCanvas().style.cursor = ''; });
+
+// ---------- About (welcome dialog, shown once per device) ----------
+
+const about = document.getElementById('about');
+
+// showModal() focuses the close button and draws a focus ring on it; focus the dialog itself instead
+function openAbout() {
+  about.showModal();
+  about.focus();
+  showDataUpdated();
+}
+
+// Date of the last commit that changed the points file. GitHub Pages' Last-Modified can't tell it:
+// every file gets the deploy time. The API allows 60 requests/hour per IP, so ask once per page load.
+const DATA_COMMITS_URL =
+  `https://api.github.com/repos/Argbjorn/belgrade-context/commits?path=${DATA_URL}&per_page=1`;
+let dataUpdatedRequested = false;
+
+function showDataUpdated() {
+  if (dataUpdatedRequested) return;
+  dataUpdatedRequested = true;
+  const el = about.querySelector('.about-updated');
+  fetch(DATA_COMMITS_URL)
+    .then(r => (r.ok ? r.json() : Promise.reject(r.status)))
+    .then(([commit]) => {
+      const date = new Date(commit.commit.committer.date);
+      el.textContent = `Точки обновлены ${date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}`;
+      el.hidden = false;
+    })
+    .catch(() => {});
+}
+
+about.addEventListener('close', () => store.set(KEYS.aboutSeen, true));
+about.querySelector('.about-close').addEventListener('click', () => about.close());
+about.querySelector('.about-start').addEventListener('click', () => about.close());
+// A click on the backdrop lands on the dialog element itself; clicks inside land on .about-body
+about.addEventListener('click', e => {
+  if (e.target === about) about.close();
+});
+
+class AboutControl {
+  onAdd() {
+    this.el = document.createElement('div');
+    this.el.className = 'maplibregl-ctrl maplibregl-ctrl-group about-ctrl';
+    this.el.innerHTML = `<button type="button">О проекте</button>`;
+    this.el.querySelector('button').addEventListener('click', openAbout);
+    return this.el;
+  }
+
+  onRemove() {
+    this.el.remove();
+  }
+}
+
+map.addControl(new AboutControl(), 'bottom-left');
+
+if (!store.get(KEYS.aboutSeen, false)) openAbout();
 
 // ---------- Card (popup on desktop, bottom sheet on mobile) ----------
 

@@ -3,7 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Женя в Белграде — карта</title>
+  <title>Belgrade context — карта мест из канала «Женя в Белграде»</title>
+  <meta name="description" content="Карта белградских достопримечательностей и любопытных мест из телеграм-канала «Женя в Белграде». У каждой точки — ссылка на пост с историей места. Отмечайте, где уже побывали.">
+  <link rel="canonical" href="https://argbjorn.github.io/belgrade-context/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:url" content="https://argbjorn.github.io/belgrade-context/">
+  <meta property="og:title" content="Belgrade context">
+  <meta property="og:description" content="Карта белградских достопримечательностей и любопытных мест из телеграм-канала «Женя в Белграде».">
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -13,6 +20,20 @@
     <button class="sheet-close" type="button" aria-label="Закрыть">×</button>
     <div class="sheet-body"></div>
   </div>
+
+  <!-- Static markup on purpose: search engines index this text without running JS -->
+  <dialog id="about" class="about" aria-labelledby="about-title" tabindex="-1">
+    <div class="about-body">
+      <button class="about-close" type="button" aria-label="Закрыть">×</button>
+      <h1 id="about-title">Belgrade context</h1>
+      <p>Привет! На этой карте собраны белградские достопримечательности и просто любопытные места, упомянутые в телеграм-канале <a href="https://t.me/Zhenya_v_Belgrade" target="_blank" rel="noopener">«Женя в Белграде»</a>. От Скупштины и Народного музея до крошечного исторического граффити: у каждой точки есть ссылка на пост в канале с интересной историей.</p>
+      <p>Подписывайтесь на канал, там много контента, которого тут нет.</p>
+      <p>Ошибки и предложения по карте: <a href="https://t.me/konstantin_remnev" target="_blank" rel="noopener">@konstantin_remnev</a></p>
+      <p class="about-updated" hidden></p>
+      <button class="about-start" type="button">Смотреть карту</button>
+    </div>
+  </dialog>
+
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
   <script type="module" src="app.js"></script>
 </body>
