@@ -8,7 +8,6 @@ const KEYS = {
   visited: 'bvm:visited',
   favorites: 'bvm:favorites',
   hideVisited: 'bvm:hideVisited',
-  onlyFavorites: 'bvm:onlyFavorites',
   // uid of the account whose marks are cached in localStorage; null = marks made without signing in
   uid: 'bvm:uid',
 };
@@ -35,7 +34,6 @@ const favorites = new Set(store.get(KEYS.favorites, []));
 const marks = { visited, favorites };
 const filters = {
   hideVisited: store.get(KEYS.hideVisited, false),
-  onlyFavorites: store.get(KEYS.onlyFavorites, false),
 };
 
 // Ask the browser not to evict our storage (helps against Safari's 7-day purge)
@@ -75,7 +73,6 @@ class FilterControl {
     this.el.className = 'maplibregl-ctrl maplibregl-ctrl-group filter-ctrl';
     this.el.innerHTML = `
       <label><input type="checkbox" data-filter="hideVisited"> Скрыть посещенное</label>
-      <label><input type="checkbox" data-filter="onlyFavorites"> Избранное</label>
       <div class="filter-count"></div>`;
     this.counter = this.el.querySelector('.filter-count');
     for (const input of this.el.querySelectorAll('input')) {
@@ -184,9 +181,7 @@ function applyMarks(data) {
 
 function render() {
   if (!map.getSource('points')) return;
-  const shown = features.filter(f =>
-    !(filters.hideVisited && visited.has(f.id)) &&
-    !(filters.onlyFavorites && !favorites.has(f.id)));
+  const shown = filters.hideVisited ? features.filter(f => !visited.has(f.id)) : features;
   map.getSource('points').setData({
     type: 'FeatureCollection',
     features: shown.map(f => ({
