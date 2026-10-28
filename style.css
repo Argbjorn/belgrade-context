@@ -175,32 +175,82 @@ html, body {
 }
 
 .account-ctrl {
+  /* Above the filter control, so the hint tooltip can overlap it */
+  position: relative;
+  z-index: 1;
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 4px 4px 10px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  max-width: 230px;
+  padding: 6px 10px;
   font: 13px/1.3 system-ui, sans-serif;
   color: var(--text);
 }
 
-.account-ctrl button {
-  width: auto;
-  height: auto;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font: 600 13px/1.3 system-ui, sans-serif;
-  color: #1a73e8;
+/* !important: component rules below set display on the same elements and would win otherwise */
+.account-ctrl[hidden],
+.account-ctrl [hidden] {
+  display: none !important;
 }
 
-.account-name {
-  max-width: 140px;
+.account-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.account-ctrl .account-info {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 1px solid var(--muted);
+  border-radius: 50%;
+  background: none;
+  font: 600 11px/1 system-ui, sans-serif;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.account-hint {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: -10px;
+  width: 230px;
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: var(--bg);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .18);
+  color: var(--text);
+  box-sizing: border-box;
+}
+
+.account-info:hover + .account-hint,
+.account-info:focus-visible + .account-hint,
+.account-hint.open {
+  display: block;
+}
+
+.account-email {
+  max-width: 210px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.account-name[hidden] {
-  display: none;
+.account-ctrl .account-action {
+  width: auto;
+  height: auto;
+  margin-left: -8px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font: 600 13px/1.3 system-ui, sans-serif;
+  color: #1a73e8;
 }
 
 .filter-count {

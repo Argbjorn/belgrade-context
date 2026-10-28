@@ -99,15 +99,31 @@ class FilterControl {
 }
 
 const filterControl = new FilterControl();
-map.addControl(filterControl, 'top-left');
 
 class AccountControl {
   onAdd() {
     this.el = document.createElement('div');
     this.el.className = 'maplibregl-ctrl maplibregl-ctrl-group account-ctrl';
-    this.el.innerHTML = `<span class="account-name"></span><button type="button"></button>`;
-    this.name = this.el.querySelector('.account-name');
-    this.button = this.el.querySelector('button');
+    // Hidden until Firebase reports the auth state, so a signed-in user never sees the sign-in prompt flash
+    this.el.hidden = true;
+    this.el.innerHTML = `
+      <div class="account-email"></div>
+      <div class="account-row">
+        <button type="button" class="account-action"></button>
+        <button type="button" class="account-info" aria-label="Зачем входить" aria-expanded="false">?</button>
+        <p class="account-hint" role="tooltip">Сейчас отметки о посещении сохраняются только на устройстве. Авторизуйтесь, чтобы не потерять сохраненное.</p>
+      </div>`;
+    this.email = this.el.querySelector('.account-email');
+    this.info = this.el.querySelector('.account-info');
+    this.hint = this.el.querySelector('.account-hint');
+    this.button = this.el.querySelector('.account-action');
+
+    // Hover shows the hint on desktop (CSS); a tap toggles it on touch screens, a tap elsewhere closes it
+    this.info.addEventListener('click', () => this.toggleHint());
+    document.addEventListener('click', e => {
+      if (!this.info.contains(e.target)) this.toggleHint(false);
+    });
+
     this.button.addEventListener('click', () => {
       const action = user ? signOut() : signIn();
       action.catch(err => {
@@ -116,7 +132,6 @@ class AccountControl {
         alert(`Не удалось ${user ? 'выйти' : 'войти'}: ${err.message}`);
       });
     });
-    this.update();
     return this.el;
   }
 
@@ -124,11 +139,19 @@ class AccountControl {
     this.el.remove();
   }
 
+  toggleHint(open = !this.hint.classList.contains('open')) {
+    this.hint.classList.toggle('open', open);
+    this.info.setAttribute('aria-expanded', open);
+  }
+
   update() {
-    this.name.textContent = user ? (user.displayName || user.email) : '';
-    this.name.hidden = !user;
+    this.el.hidden = false;
+    this.info.hidden = Boolean(user);
+    this.toggleHint(false);
+    this.email.hidden = !user;
+    this.email.textContent = user?.email ?? '';
+    this.email.title = user?.email ?? '';
     this.button.textContent = user ? 'Выйти' : 'Войти через Google';
-    this.button.title = user ? '' : 'Чтобы отметки синхронизировались между устройствами';
   }
 }
 
@@ -138,12 +161,12 @@ let user = null;
 let unwatch = null;
 const accountControl = new AccountControl();
 
+// Account goes above the filter; without Firebase config it simply stays hidden
+map.addControl(accountControl, 'top-left');
+map.addControl(filterControl, 'top-left');
+
 loadConfig()
-  .then(ok => {
-    if (!ok) return;
-    map.addControl(accountControl, 'top-left');
-    return initSync(handleAuth);
-  })
+  .then(ok => ok && initSync(handleAuth))
   .catch(err => console.error('Firebase не загрузился, работаем на localStorage', err));
 
 function handleAuth(nextUser) {
