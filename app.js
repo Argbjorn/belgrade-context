@@ -56,6 +56,14 @@ const map = new maplibregl.Map({
 });
 
 map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
+// Android Chrome drops the WebGL context of a backgrounded tab. MapLibre 4 recreates the painter on restore,
+// but tiles and style atlases keep GPU objects from the dead context and the map renders blank.
+// Rebuilding the style from its own snapshot recreates all of them; our points and layers are part of the snapshot.
+map.on('webglcontextrestored', () => {
+  if (!map.isStyleLoaded()) return;
+  map.setStyle(map.getStyle(), { diff: false });
+});
+
 map.addControl(new maplibregl.GeolocateControl({
   positionOptions: { enableHighAccuracy: true },
   trackUserLocation: true,
