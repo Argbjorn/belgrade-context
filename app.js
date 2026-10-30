@@ -294,6 +294,7 @@ map.on('load', async () => {
 map.on('click', 'points-hit', e => {
   const f = e.features[0];
   openCard(f.properties.id, f.geometry.coordinates);
+  track(f.properties.name, 'Открыта точка');
 });
 
 map.on('click', e => {
@@ -302,6 +303,11 @@ map.on('click', e => {
 
 map.on('mouseenter', 'points-hit', () => { map.getCanvas().style.cursor = 'pointer'; });
 map.on('mouseleave', 'points-hit', () => { map.getCanvas().style.cursor = ''; });
+
+// GoatCounter event; the script loads async and may be blocked, so skip silently if it's missing
+function track(path, title) {
+  window.goatcounter?.count?.({ path, title, event: true });
+}
 
 // ---------- About (welcome dialog, shown once per device) ----------
 
@@ -394,6 +400,7 @@ function buildCard(id) {
       a.target = '_blank';
       a.rel = 'noopener';
       a.textContent = linkLabel(url);
+      a.addEventListener('click', () => track(url, f.properties.name));
       const li = document.createElement('li');
       li.append(a);
       list.append(li);
